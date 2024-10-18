@@ -4,9 +4,9 @@
   xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>WilsonJ&#39;s blog</title>
-    <link>http://example.com/</link>
+    <link>https://blog.wilsonj.ltd/</link>
     
-    <atom:link href="http://example.com/rss2.xml" rel="self" type="application/rss+xml"/>
+    <atom:link href="https://blog.wilsonj.ltd/rss2.xml" rel="self" type="application/rss+xml"/>
     
     <description>feedId:69994040138845184+userId:68846628686371840</description>
     <pubDate>Fri, 18 Oct 2024 04:56:36 GMT</pubDate>
@@ -14,8 +14,8 @@
     
     <item>
       <title>mongoTemplate 使用管道聚合实现 根据某个条件去重</title>
-      <link>http://example.com/2024/10/15/blog004-1/</link>
-      <guid>http://example.com/2024/10/15/blog004-1/</guid>
+      <link>https://blog.wilsonj.ltd/2024/10/15/blog004-1/</link>
+      <guid>https://blog.wilsonj.ltd/2024/10/15/blog004-1/</guid>
       <pubDate>Tue, 15 Oct 2024 07:55:07 GMT</pubDate>
       
       <description>在日常业务中可能会遇到根据数据库某个字段进行去重，我们可以使用***mongotemplate.findDistinct***方法。但是使用这个方法不太好匹配其他例如 排序、分页、获取总数等业务。为了能更好的实现业务我们可以使用mongo 的 管道聚合来实现。</description>
@@ -24,17 +24,17 @@
       
       
       
-      <category domain="http://example.com/tags/mongodb/">mongodb</category>
+      <category domain="https://blog.wilsonj.ltd/tags/mongodb/">mongodb</category>
       
       
-      <comments>http://example.com/2024/10/15/blog004-1/#disqus_thread</comments>
+      <comments>https://blog.wilsonj.ltd/2024/10/15/blog004-1/#disqus_thread</comments>
       
     </item>
     
     <item>
       <title>【mongo事务】在spring boot 中，整合mongo和mysql的事务。</title>
-      <link>http://example.com/2024/06/05/blog003-1/</link>
-      <guid>http://example.com/2024/06/05/blog003-1/</guid>
+      <link>https://blog.wilsonj.ltd/2024/06/05/blog003-1/</link>
+      <guid>https://blog.wilsonj.ltd/2024/06/05/blog003-1/</guid>
       <pubDate>Wed, 05 Jun 2024 01:29:52 GMT</pubDate>
       
       <description>在spring boot的声明式事务中，一次只能指定一个TransactionManager，所以在默认情况下一个方法中，只能支持mysql或mongo其中一个的事务。但是在日常业务中，很多时候一段业务内既有mongo也有mysql，这时就需要mysql和mongo的事务同时支持，不然可能就会出现mysql和mongo数据不一致的情况。ChainedTransactionManager是Spring框架中的一个事务管理器实现，它可以将多个事务管理器组合在一起形成一个链式的事务管理器。但是值得注意的是，只是链式反应事务管理器，而不是分布式事务(XA 之类的)。所以在某些复杂的情况下依旧不能做到事务的一致性。所以ChainedTransactionManager仅支持简单的事务场景。</description>
@@ -43,19 +43,19 @@
       
       
       
-      <category domain="http://example.com/tags/mongodb/">mongodb</category>
+      <category domain="https://blog.wilsonj.ltd/tags/mongodb/">mongodb</category>
       
-      <category domain="http://example.com/tags/%E4%BA%8B%E5%8A%A1/">事务</category>
+      <category domain="https://blog.wilsonj.ltd/tags/%E4%BA%8B%E5%8A%A1/">事务</category>
       
       
-      <comments>http://example.com/2024/06/05/blog003-1/#disqus_thread</comments>
+      <comments>https://blog.wilsonj.ltd/2024/06/05/blog003-1/#disqus_thread</comments>
       
     </item>
     
     <item>
       <title>使用docker-compose 搭建mongo多副本</title>
-      <link>http://example.com/2024/06/05/blog002/</link>
-      <guid>http://example.com/2024/06/05/blog002/</guid>
+      <link>https://blog.wilsonj.ltd/2024/06/05/blog002/</link>
+      <guid>https://blog.wilsonj.ltd/2024/06/05/blog002/</guid>
       <pubDate>Wed, 05 Jun 2024 01:02:23 GMT</pubDate>
       
       <description>MongoDB副本集（Replica Set）是有自动故障恢复功能的主从集群，有一个Primary节点和一个或者多个Secondary节点组成。副本集没有固定的主节点，当主节点发生故障时，整个集群会选举一个主节点 为系统提供服务以保证系统的高可用。</description>
@@ -64,21 +64,21 @@
       
       
       
-      <category domain="http://example.com/tags/mongodb/">mongodb</category>
+      <category domain="https://blog.wilsonj.ltd/tags/mongodb/">mongodb</category>
       
-      <category domain="http://example.com/tags/%E4%BA%8B%E5%8A%A1/">事务</category>
+      <category domain="https://blog.wilsonj.ltd/tags/linux/">linux</category>
       
-      <category domain="http://example.com/tags/linux/">linux</category>
+      <category domain="https://blog.wilsonj.ltd/tags/%E4%BA%8B%E5%8A%A1/">事务</category>
       
       
-      <comments>http://example.com/2024/06/05/blog002/#disqus_thread</comments>
+      <comments>https://blog.wilsonj.ltd/2024/06/05/blog002/#disqus_thread</comments>
       
     </item>
     
     <item>
       <title>【mongo事务】使用docker-compose启动mongo,‘单副本模式‘实现支持事务</title>
-      <link>http://example.com/2022/10/17/blog001/</link>
-      <guid>http://example.com/2022/10/17/blog001/</guid>
+      <link>https://blog.wilsonj.ltd/2022/10/17/blog001/</link>
+      <guid>https://blog.wilsonj.ltd/2022/10/17/blog001/</guid>
       <pubDate>Mon, 17 Oct 2022 01:33:29 GMT</pubDate>
       
       <description>想要mongo支持事务的首要条件是mongo版本4.x 以上，且为复制集模式。由于很多时候使用mongo都不需要部署多副本，但是想支持事务，所以可以使用‘单副本模式’，既能保证mongo实例只有一个，又是复制集模式。</description>
@@ -87,14 +87,14 @@
       
       
       
-      <category domain="http://example.com/tags/mongodb/">mongodb</category>
+      <category domain="https://blog.wilsonj.ltd/tags/mongodb/">mongodb</category>
       
-      <category domain="http://example.com/tags/%E4%BA%8B%E5%8A%A1/">事务</category>
+      <category domain="https://blog.wilsonj.ltd/tags/linux/">linux</category>
       
-      <category domain="http://example.com/tags/linux/">linux</category>
+      <category domain="https://blog.wilsonj.ltd/tags/%E4%BA%8B%E5%8A%A1/">事务</category>
       
       
-      <comments>http://example.com/2022/10/17/blog001/#disqus_thread</comments>
+      <comments>https://blog.wilsonj.ltd/2022/10/17/blog001/#disqus_thread</comments>
       
     </item>
     
