@@ -66,9 +66,9 @@
       
       <category domain="http://example.com/tags/mongodb/">mongodb</category>
       
-      <category domain="http://example.com/tags/linux/">linux</category>
-      
       <category domain="http://example.com/tags/%E4%BA%8B%E5%8A%A1/">事务</category>
+      
+      <category domain="http://example.com/tags/linux/">linux</category>
       
       
       <comments>http://example.com/2024/06/05/blog002/#disqus_thread</comments>
@@ -89,9 +89,9 @@
       
       <category domain="http://example.com/tags/mongodb/">mongodb</category>
       
-      <category domain="http://example.com/tags/linux/">linux</category>
-      
       <category domain="http://example.com/tags/%E4%BA%8B%E5%8A%A1/">事务</category>
+      
+      <category domain="http://example.com/tags/linux/">linux</category>
       
       
       <comments>http://example.com/2022/10/17/blog001/#disqus_thread</comments>
