@@ -4,6 +4,46 @@
   
     
     <entry>
+      <title>mongoTemplate 使用管道聚合实现 根据某个条件去重</title>
+      <link href="/2024/10/15/blog004-1/"/>
+      <url>/2024/10/15/blog004-1/</url>
+      
+        <content type="html"><![CDATA[<p>在日常业务中可能会遇到根据数据库某个字段进行去重，我们可以使用<em><strong>mongotemplate.findDistinct</strong></em>方法。但是使用这个方法不太好匹配其他例如 排序、分页、获取总数等业务。为了能更好的实现业务我们可以使用mongo 的 管道聚合来实现。下面直接展示代码：</p><p><strong>条件+去重+排序+分页</strong></p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">group</span><span class="hljs-params">()</span> &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">page</span> <span class="hljs-operator">=</span> <span class="hljs-number">1</span>;  <span class="hljs-comment">//页码</span><br>        <span class="hljs-type">int</span> <span class="hljs-variable">size</span> <span class="hljs-operator">=</span> <span class="hljs-number">4</span>;  <span class="hljs-comment">//页长</span><br><br>        <span class="hljs-type">Criteria</span> <span class="hljs-variable">criteria</span> <span class="hljs-operator">=</span> Criteria.where(<span class="hljs-string">&quot;num&quot;</span>).lte(<span class="hljs-number">10</span>);<br>        <span class="hljs-type">Aggregation</span> <span class="hljs-variable">aggregation</span> <span class="hljs-operator">=</span> Aggregation.newAggregation(<br>                Aggregation.match(criteria), <span class="hljs-comment">//过滤条件</span><br>                Aggregation.group(<span class="hljs-string">&quot;age&quot;</span>) <span class="hljs-comment">// 根据指定字段去重</span><br>                        .first(<span class="hljs-string">&quot;$$ROOT&quot;</span>).as(<span class="hljs-string">&quot;document&quot;</span>), <span class="hljs-comment">// 保留整个文档</span><br>                Aggregation.replaceRoot(<span class="hljs-string">&quot;document&quot;</span>), <span class="hljs-comment">// 将保存的整个文档对象作为输出文档</span><br>                Aggregation.sort(Sort.by(Sort.Direction.ASC, <span class="hljs-string">&quot;num&quot;</span>)), <span class="hljs-comment">// 根据指定字段排序</span><br>                Aggregation.skip((page - <span class="hljs-number">1</span>) * size), <span class="hljs-comment">// 跳过指定的页数</span><br>                Aggregation.limit(size)<br>        );<br>        AggregationResults&lt;User&gt; results = mongoTemplate.aggregate(aggregation, <span class="hljs-string">&quot;user&quot;</span>, User.class);<br>        List&lt;User&gt; userList = results.getMappedResults();<br>        <span class="hljs-type">Aggregation</span> <span class="hljs-variable">countAgg</span> <span class="hljs-operator">=</span> Aggregation.newAggregation(<br>                Aggregation.match(criteria),     <span class="hljs-comment">// 过滤条件</span><br>                Aggregation.group(<span class="hljs-string">&quot;age&quot;</span>),  <span class="hljs-comment">// 根据指定字段去重</span><br>                Aggregation.count().as(<span class="hljs-string">&quot;total&quot;</span>) <span class="hljs-comment">// 计算去重后的总数</span><br>        );<br><br>        AggregationResults&lt;org.bson.Document&gt; countResults = mongoTemplate.aggregate(countAgg, <span class="hljs-string">&quot;user&quot;</span>, org.bson.Document.class);<br>        <span class="hljs-type">int</span> <span class="hljs-variable">total</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br>        <span class="hljs-keyword">if</span> (!countResults.getMappedResults().isEmpty()) &#123;<br>            total = countResults.getMappedResults().get(<span class="hljs-number">0</span>).getInteger(<span class="hljs-string">&quot;total&quot;</span>);<br>        &#125;<br><br>        System.out.println(<span class="hljs-string">&quot;查询出来的数据&quot;</span>);<br>        System.out.println(<span class="hljs-string">&quot;当前为第&quot;</span> + page + <span class="hljs-string">&quot;页&quot;</span>);<br>        userList.forEach(System.out::println);<br>        System.out.println(<span class="hljs-string">&quot;总数为：&quot;</span> + total);<br>    &#125;<br></code></pre></td></tr></table></figure><p><strong>实体类</strong></p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">User</span> &#123;<br>    <span class="hljs-keyword">private</span> Integer num;<br>    <span class="hljs-keyword">private</span> String name;<br>    <span class="hljs-keyword">private</span> Integer age;<br>&#125;<br></code></pre></td></tr></table></figure><p><strong>数据库数据</strong><br><img src="/images/blog004/img001.png"><br><strong>执行结果</strong><br><img src="/images/blog004/img002.png"></p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> mongodb </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>【mongo事务】在spring boot 中，整合mongo和mysql的事务。</title>
+      <link href="/2024/06/05/blog003-1/"/>
+      <url>/2024/06/05/blog003-1/</url>
+      
+        <content type="html"><![CDATA[<p>在spring boot的声明式事务中，一次只能指定一个TransactionManager，所以在默认情况下一个方法中，只能支持mysql或mongo其中一个的事务。但是在日常业务中，很多时候一段业务内既有mongo也有mysql，这时就需要mysql和mongo的事务同时支持，不然可能就会出现mysql和mongo数据不一致的情况。</p><h1 id="ChainedTransactionManager"><a href="#ChainedTransactionManager" class="headerlink" title="ChainedTransactionManager"></a>ChainedTransactionManager</h1><p>ChainedTransactionManager是Spring框架中的一个事务管理器实现，它可以将多个事务管理器组合在一起形成一个链式的事务管理器。但是值得注意的是，只是链式反应事务管理器，而不是分布式事务(XA 之类的)。所以在某些复杂的情况下依旧不能做到事务的一致性。所以ChainedTransactionManager仅支持简单的事务场景。</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Configuration</span><br><span class="hljs-meta">@Slf4j</span><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * 事务管理</span><br><span class="hljs-comment"> * 整合mongo  mysql 事务</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">TransactionConfig</span> &#123;<br>    <span class="hljs-meta">@Bean</span><br>    <span class="hljs-meta">@Primary</span> <span class="hljs-comment">//mysql事务管理器  默认事务管理器</span><br>    <span class="hljs-keyword">public</span> JdbcTransactionManager <span class="hljs-title function_">mysqlTransactionManager</span><span class="hljs-params">(DataSource dataSource)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">JdbcTransactionManager</span>(dataSource);<br>    &#125;<br><br>    <span class="hljs-meta">@Bean(name = &quot;mongoTransactionManager&quot;)</span><br>    <span class="hljs-keyword">public</span> MongoTransactionManager <span class="hljs-title function_">mongoTransactionManager</span><span class="hljs-params">(MongoDatabaseFactory factory)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MongoTransactionManager</span>(factory);<br>    &#125;<br><br>    <span class="hljs-meta">@Bean(name = &quot;chainedTransactionManager&quot;)</span><br>    <span class="hljs-keyword">public</span> ChainedTransactionManager <span class="hljs-title function_">chainedTransactionManager</span><span class="hljs-params">(JdbcTransactionManager jdbcTransactionManager, <span class="hljs-meta">@Qualifier(&quot;mongoTransactionManager&quot;)</span> MongoTransactionManager mongoTransactionManager)</span> &#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">ChainedTransactionManager</span>(jdbcTransactionManager,mongoTransactionManager);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure><p>在这里配置3个TransactionManager，后续可以根据具体业务在@Transactional指定使用的TransactionManager</p><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-meta">@Transactional()</span> <span class="hljs-comment">//这里默认的是mysql的TransactionManager</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">methodA</span><span class="hljs-params">()</span> &#123;&#125;<br><span class="hljs-meta">@Transactional(value = &quot;mongoTransactionManager&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">methodA</span><span class="hljs-params">()</span> &#123;&#125;<br><span class="hljs-meta">@Transactional(value = &quot;chainedTransactionManager&quot;)</span><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">methodA</span><span class="hljs-params">()</span> &#123;&#125;<br></code></pre></td></tr></table></figure><p>但是spring 官方在2020年11月已经开始将ChainedTransactionManager标记为@Deprecated，具体原因可看<a href="https://github.com/spring-projects/spring-data-commons/issues/2232">https://github.com/spring-projects/spring-data-commons/issues/2232</a></p><p>虽然已经废弃，但是能支持简单情况事务处理。</p>]]></content>
+      
+      
+      
+        <tags>
+            
+            <tag> mongodb </tag>
+            
+            <tag> 事务 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>使用docker-compose 搭建mongo多副本</title>
       <link href="/2024/06/05/blog002/"/>
       <url>/2024/06/05/blog002/</url>
@@ -14,7 +54,11 @@
       
         <tags>
             
-            <tag> mongodb,linux,事务 </tag>
+            <tag> mongodb </tag>
+            
+            <tag> linux </tag>
+            
+            <tag> 事务 </tag>
             
         </tags>
       
@@ -33,7 +77,11 @@
       
         <tags>
             
-            <tag> mongodb,linux,事务 </tag>
+            <tag> mongodb </tag>
+            
+            <tag> linux </tag>
+            
+            <tag> 事务 </tag>
             
         </tags>
       
